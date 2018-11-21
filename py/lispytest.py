@@ -1,3 +1,4 @@
+from __future__ import print_function
 
 ################ Tests for lis.py and lispy.py
 
@@ -8,7 +9,6 @@ lis_tests = [
     ("(if (> 6 5) (+ 1 1) (+ 2 2))", 2),
     ("(if (< 6 5) (+ 1 1) (+ 2 2))", 4),
     ("(define x 3)", None), ("x", 3), ("(+ x x)", 6),
-    ("(begin (define x 1) (set! x (+ x 1)) (+ x 1))", 3),
     ("((lambda (x) (+ x x)) 5)", 10),
     ("(define twice (lambda (x) (* 2 x)))", None), ("(twice 5)", 10),
     ("(define compose (lambda (f g) (lambda (x) (f (g x)))))", None),
@@ -50,6 +50,7 @@ lispy_tests = [
     ("(lyst 1 2 3 (+ 2 2))", [1,2,3,4]),
     ("(if 1 2)", 2),
     ("(if (= 3 4) 2)", None),
+    ("(begin (define x 1) (set! x (+ x 1)) (+ x 1))", 3),
     ("(define ((account bal) amt) (set! bal (+ bal amt)) bal)", None),
     ("(define a1 (account 100))", None),
     ("(a1 0)", 100), ("(a1 10)", 110), ("(a1 10)", 120),
@@ -103,19 +104,19 @@ def test(tests, name=''):
     for (x, expected) in tests:
         try:
             result = eval(parse(x))
-            print x, '=>', to_string(result)
+            print(x, '=>', lispstr(result))
             ok = (result == expected)
         except Exception as e:
-            print x, '=raises=>', type(e).__name__, e
-            ok = issubclass(expected, Exception) and isinstance(e, expected)
+            print(x, '=raises=>', type(e).__name__, e)
+            ok = isinstance(expected, type) and issubclass(expected, Exception) and isinstance(e, expected)
         if not ok:
             fails += 1
-            print 'FAIL!!!  Expected', expected
-    print '%s %s: %d out of %d tests fail.' % ('*'*45, name, fails, len(tests))
+            print('FAIL!!!  Expected', expected)
+    print('%s %s: %d out of %d tests fail.' % ('*'*45, name, fails, len(tests)))
 
 if __name__ == '__main__':
     from lis import *
     test(lis_tests, 'lis.py')
     from lispy import *
     test(lis_tests+lispy_tests, 'lispy.py')
-
+    
